@@ -1,0 +1,4 @@
+module.exports = {
+  MIN_PURCHASE_AMOUNT: 1000,
+  REFERRALS_PAGE_LIMIT: 8
+};

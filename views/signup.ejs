@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Referral System</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h2>Sign Up</h2>
+  <form id="signupForm">
+    <input name="name" placeholder="Full Name" required />
+    <input name="email" type="email" placeholder="Email Address" required />
+    <input name="password" type="password" placeholder="Password (min 6 chars)" required />
+    <input name="referredBy" placeholder="Referral Code (optional)" />
+    <button type="submit">Sign Up</button>
+  </form>
+  
+  <p>Already have an account? <a href="/login">Login here</a></p>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      
+      try {
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('token', result.token);
+          window.location.href = '/dashboard';
+        } else {
+          alert('Signup failed: ' + result.msg);
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

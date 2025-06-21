@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Referral System</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <div id="loading">Loading dashboard...</div>
+    <div id="dashboardContent" style="display: none;">
+      <h2 id="welcomeMessage">Welcome!</h2>
+      <p><strong>Your Referral Code:</strong> <code id="referralCode"></code></p>
+      <button onclick="copyReferralCode()">Copy Referral Code</button>
+      
+      <div class="earnings">
+        <h3>💰 Your Earnings</h3>
+        <p><strong>Total Earnings:</strong> ₹<span id="totalEarnings">0</span></p>
+        <p><strong>Level 1 Earnings:</strong> ₹<span id="level1Earnings">0</span></p>
+        <p><strong>Level 2 Earnings:</strong> ₹<span id="level2Earnings">0</span></p>
+      </div>
+
+      <div class="referrals">
+        <h3 id="referralsTitle">👥 Your Referrals (0)</h3>
+        <div id="referralsList">
+          <p>No referrals yet. Share your referral code to start earning!</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <a href="/purchase">💳 Make a Purchase</a>
+        <a href="#" onclick="logout()" style="background-color: #dc3545; margin-left: 10px;">🚪 Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.js"></script>
+  <script>
+    let currentReferralCode = '';
+
+    function copyReferralCode() {
+      if (currentReferralCode) {
+        navigator.clipboard.writeText(currentReferralCode).then(() => {
+          alert('Referral code copied to clipboard!');
+        });
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+
+    async function loadDashboard() {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/dashboard', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to load dashboard');
+        }
+
+        const data = await response.json();
+        
+        // Update UI with data
+        document.getElementById('welcomeMessage').textContent = `Welcome ${data.user.name}!`;
+        document.getElementById('referralCode').textContent = data.user.referralCode;
+        currentReferralCode = data.user.referralCode;
+        
+        document.getElementById('totalEarnings').textContent = data.earnings.total || 0;
+        document.getElementById('level1Earnings').textContent = data.earnings.level1Earnings || 0;
+        document.getElementById('level2Earnings').textContent = data.earnings.level2Earnings || 0;
+        
+        // Update referrals
+        const referralsList = document.getElementById('referralsList');
+        const referralsTitle = document.getElementById('referralsTitle');
+        
+        if (data.referrals && data.referrals.length > 0) {
+          referralsTitle.textContent = `👥 Your Referrals (${data.referrals.length})`;
+          referralsList.innerHTML = '<ul>' + 
+            data.referrals.map(r => 
+              `<li>${r.name} — ${r.email} (Code: ${r.referralCode})</li>`
+            ).join('') + 
+            '</ul>';
+        } else {
+          referralsTitle.textContent = '👥 Your Referrals (0)';
+          referralsList.innerHTML = '<p>No referrals yet. Share your referral code to start earning!</p>';
+        }
+
+        // Hide loading and show content
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('dashboardContent').style.display = 'block';
+
+      } catch (err) {
+        console.error('Error loading dashboard:', err);
+        alert('Failed to load dashboard. Please login again.');
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    }
+
+    // Load dashboard when page loads
+    document.addEventListener('DOMContentLoaded', loadDashboard);
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  </script>
+</body>
+</html>

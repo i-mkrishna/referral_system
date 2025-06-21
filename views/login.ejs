@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Referral System</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input name="email" type="email" placeholder="Email Address" required />
+    <input name="password" type="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+  </form>
+  
+  <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('token', result.token);
+          window.location.href = '/dashboard';
+        } else {
+          alert('Login failed: ' + result.msg);
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

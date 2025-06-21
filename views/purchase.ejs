@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make Purchase - Referral System</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h2>💳 Make a Purchase</h2>
+  <form id="purchaseForm">
+    <input name="amount" type="number" placeholder="Amount (minimum ₹1000)" min="1000" required />
+    <button type="submit">Pay Now</button>
+  </form>
+  
+  <p><a href="/dashboard">← Back to Dashboard</a></p>
+
+  <script>
+    document.getElementById('purchaseForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please login first');
+        window.location.href = '/login';
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/purchase', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          alert('Purchase successful! Earnings have been distributed.');
+          window.location.href = '/dashboard';
+        } else {
+          alert('Purchase failed: ' + result.msg);
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    });
+
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login';
+    }
+  </script>
+</body>
+</html>
