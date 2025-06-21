@@ -2,6 +2,10 @@
 
 A complete multi-level referral system built with Node.js, Express, MongoDB, and Socket.IO. Features real-time earnings tracking, user authentication, and a beautiful web interface.
 
+## 🔗 Live Demo
+
+👉 [Check out the live project here](https://referral-system-9kes.onrender.com/)
+
 ## Features
 
 - 🔐 **User Authentication** - Secure signup/login with JWT tokens
