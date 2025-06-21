@@ -5,7 +5,7 @@ const Earning = require("../models/Earning");
 const bcrypt = require("bcrypt");
 const generateReferralCode = require("../utils/generateReferralCode");
 
-const JWT_SECRET = 'baburao ka secret he ese nhi decrypt hoga';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const connect = async () => {
     try {

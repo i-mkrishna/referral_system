@@ -56,7 +56,7 @@ const authenticateToken = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, 'baburao ka secret he ese nhi decrypt hoga');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.redirect('/login');
@@ -108,7 +108,7 @@ app.get('/api/dashboard', async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, 'baburao ka secret he ese nhi decrypt hoga');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
     if (!user) {
