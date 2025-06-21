@@ -56,7 +56,7 @@ Create a `.env` file in the root directory:
 
 ```env
 PORT=8080
-MONGO_URI=mongodb://localhost:27017/referral_system (here should be your mongodb connection string)
+MONGO_URI=(here should be your mongodb connection string)
 JWT_SECRET=your_jwt_secret_key_here_make_it_long_and_secure
 ```
 
